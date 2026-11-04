@@ -1,7 +1,7 @@
 // ===== 唯一需要修改的地方 =====
 window.SBGOV_CONFIG = {
   API_BASE: "https://api.sbgov.tw",
-  TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV", // 如果你沒填真實的 Sitekey，驗證框不會出來
+  TURNSTILE_SITEKEY: "請填入 Turnstile Sitekey", 
 };
 
 (function () {
@@ -20,42 +20,45 @@ window.SBGOV_CONFIG = {
     if (document.getElementById("apply-turnstile")) {
       applyWidgetId = turnstile.render("#apply-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "apply", theme: "light",
-        callback: (t) => { tokens.apply = t; },
+        callback: (t) => { tokens.apply = t; console.log("Apply Turnstile OK"); },
         "expired-callback": () => { tokens.apply = ""; },
-        "error-callback": (e) => { console.error("Turnstile Apply 錯誤:", e); },
+        "error-callback": (e) => { console.error("Apply Turnstile 錯誤:", e); },
       });
     }
 
     if (document.getElementById("status-turnstile")) {
       statusWidgetId = turnstile.render("#status-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "status", theme: "light",
-        callback: (t) => { tokens.status = t; },
+        callback: (t) => { tokens.status = t; console.log("Status Turnstile OK"); },
         "expired-callback": () => { tokens.status = ""; },
-        "error-callback": (e) => { console.error("Turnstile Status 錯誤:", e); },
+        "error-callback": (e) => { console.error("Status Turnstile 錯誤:", e); },
       });
     }
 
     if (document.getElementById("report-turnstile")) {
       reportWidgetId = turnstile.render("#report-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "report", theme: "light",
-        callback: (t) => { tokens.report = t; },
+        callback: (t) => { tokens.report = t; console.log("Report Turnstile OK"); },
         "expired-callback": () => { tokens.report = ""; },
-        "error-callback": (e) => { console.error("Turnstile Report 錯誤:", e); },
+        "error-callback": (e) => { console.error("Report Turnstile 錯誤:", e); },
       });
     }
   }
 
   async function apiPost(path, payload) {
     try {
+      console.log(`[API] 發送請求到 ${cfg.API_BASE + path}`, payload);
       const r = await fetch(cfg.API_BASE + path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      return await r.json();
+      const resData = await r.json();
+      console.log(`[API] 回應 (${r.status}):`, resData);
+      return resData;
     } catch (e) {
       console.error("API 連線失敗:", e);
-      return { ok: false, error: "網路連線失敗，請檢查 Console" };
+      return { ok: false, error: "網路連線失敗，請檢查 F12 Console" };
     }
   }
 
@@ -95,17 +98,14 @@ window.SBGOV_CONFIG = {
       const msg = document.getElementById("apply-msg");
 
       if (!tokens.apply) {
-        msg.className = "text-sm font-bold text-red-600 mt-2"; 
-        msg.textContent = opts.waitTurnstile || "請先完成上方的人機驗證！";
-        alert("請先完成上方的人機驗證！若驗證框沒出現，請確認 Sitekey 是否正確。");
-        return;
+        msg.className = "text-sm text-amber-600"; msg.textContent = opts.waitTurnstile || "請先完成人機驗證"; return;
       }
-      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = opts.loading || "提交中…";
+      msg.className = "text-sm text-slate-400"; msg.textContent = opts.loading || "提交中…";
       const j = await apiPost("/api/apply", {
         subdomain: sub, github_target: tgt, contact: contact, turnstile_token: tokens.apply,
       });
       tokens.apply = ""; if (applyWidgetId) turnstile.reset(applyWidgetId);
-      msg.className = "text-sm font-bold mt-2 " + (j.ok ? "text-green-600" : "text-red-600");
+      msg.className = "text-sm " + (j.ok ? "text-green-600" : "text-red-600");
       msg.textContent = j.ok ? (opts.success || j.message) : (j.error || opts.fail || "提交失敗");
     };
   }
@@ -116,15 +116,11 @@ window.SBGOV_CONFIG = {
     btn.onclick = async () => {
       const sub = document.getElementById("status-sub").value.trim().toLowerCase();
       const out = document.getElementById("status-out");
-      if (!tokens.status) { 
-        out.innerHTML = `<p class="font-bold text-red-600">${opts.waitTurnstile || "請先完成人機驗證"}</p>`; 
-        alert("請先完成人機驗證！");
-        return; 
-      }
+      if (!tokens.status) { out.innerHTML = `<p class="text-amber-600">${opts.waitTurnstile || "請先完成人機驗證"}</p>`; return; }
       out.innerHTML = `<p class="text-slate-400">${opts.loading || "查詢中…"}</p>`;
       const j = await apiPost("/api/status", { subdomain: sub, turnstile_token: tokens.status });
       tokens.status = ""; if (statusWidgetId) turnstile.reset(statusWidgetId);
-      if (!j.ok) { out.innerHTML = `<p class="font-bold text-red-600">${j.error}</p>`; return; }
+      if (!j.ok) { out.innerHTML = `<p class="text-red-600">${j.error}</p>`; return; }
       const d = j.data;
       const label = (opts.labels && opts.labels[d.status]) || [d.status, ""];
       out.innerHTML = `
@@ -154,18 +150,19 @@ window.SBGOV_CONFIG = {
 
       if (!tokens.report) {
         msg.className = "text-sm font-bold text-red-600 mt-2"; 
-        msg.textContent = opts.waitTurnstile || "請先完成上方的人機驗證！";
-        alert("請先完成上方的人機驗證！若驗證框沒出現，請確認 Sitekey 是否正確。");
+        msg.textContent = "請先完成上方的人機驗證！";
+        alert("請先完成上方的人機驗證！");
         return;
       }
       
-      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = opts.loading || "提交中…";
+      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = "提交中…";
       
       const j = await apiPost("/api/report", {
         subdomain: sub, reason: reason, contact: contact, turnstile_token: tokens.report,
       });
       
-      tokens.report = ""; if (reportWidgetId) turnstile.reset(reportWidgetId);
+      tokens.report = ""; 
+      if (reportWidgetId) turnstile.reset(reportWidgetId);
       
       if (j.ok) {
         msg.className = "text-sm font-bold text-green-600 mt-2";
@@ -177,7 +174,7 @@ window.SBGOV_CONFIG = {
       } else {
         msg.className = "text-sm font-bold text-red-600 mt-2";
         msg.textContent = j.error || opts.fail || "提交失敗";
-        alert("提交失敗：" + (j.error || "未知錯誤"));
+        alert("提交失敗：" + (j.error || "請看 F12 主控台"));
       }
     };
   }
