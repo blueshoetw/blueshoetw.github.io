@@ -10,13 +10,12 @@
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
   
-  <!-- 頂部導航列 (醒目檢舉按鈕在此) -->
+  <!-- 頂部導航列 -->
   <div class="flex justify-between items-center text-sm border-b pb-4">
-    <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-4">
       <a href="./privacy/" class="text-slate-400 hover:text-slate-900">隱私政策</a>
       <a href="./terms/" class="text-slate-400 hover:text-slate-900">使用條款</a>
-      <!-- 醒目檢舉按鈕 -->
-      <a href="./report.html" class="bg-red-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-red-700 font-bold transition">檢舉</a>
+      <a href="./report.html" class="text-red-600 hover:text-red-800 font-bold">檢舉</a>
     </div>
     <div class="space-x-3">
       <a href="./index.html" class="text-slate-900 font-semibold">繁中</a>
@@ -24,6 +23,17 @@
       <a href="./index-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
     </div>
   </div>
+
+  <!-- 醒目檢舉橫幅 -->
+  <a href="./report.html" class="block bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg hover:bg-red-100 transition group">
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-sm font-bold text-red-800">發現濫用、釣魚或違規網域？</p>
+        <p class="text-xs text-red-600 mt-1">若發現任何違反使用條款的行為，請協助我們檢舉。</p>
+      </div>
+      <span class="bg-red-600 text-white px-4 py-2 rounded shadow font-bold text-sm whitespace-nowrap ml-4 group-hover:bg-red-700 transition">前往檢舉</span>
+    </div>
+  </a>
 
   <div>
     <h1 class="text-2xl font-bold">申請免費子網域</h1>
