@@ -1,35 +1,35 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>举报违规网域 - sbgov.tw</title>
+<title>Report Abuse - sbgov.tw</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
-  <div class="flex justify-between items-center text-sm">
-    <div class="space-x-3">
-      <a href="./index-zh-cn.html" class="text-slate-400 hover:text-slate-900">首页</a>
-      <a href="./privacy/" class="text-slate-400 hover:text-slate-900">隐私政策</a>
-      <a href="./terms/" class="text-slate-400 hover:text-slate-900">使用条款</a>
+  <div class="flex justify-between items-center text-sm border-b pb-4">
+    <div class="flex items-center space-x-3">
+      <a href="./index-en.html" class="text-slate-400 hover:text-slate-900">Home</a>
+      <a href="./privacy/" class="text-slate-400 hover:text-slate-900">Privacy</a>
+      <a href="./terms/" class="text-slate-400 hover:text-slate-900">Terms</a>
     </div>
     <div class="space-x-3">
       <a href="./report.html" class="text-slate-400 hover:text-slate-900">繁中</a>
-      <a href="./report-en.html" class="text-slate-400 hover:text-slate-900">EN</a>
-      <a href="./report-zh-cn.html" class="text-slate-900 font-semibold">简中</a>
+      <a href="./report-en.html" class="text-slate-900 font-semibold">EN</a>
+      <a href="./report-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
     </div>
   </div>
 
   <div>
-    <h1 class="text-2xl font-bold text-red-600">举报违规网域</h1>
-    <p class="text-sm text-slate-500 mt-1">若发现滥用、钓鱼或违反条款之网域，请在此回报。</p>
+    <h1 class="text-2xl font-bold text-red-600">Report Abuse</h1>
+    <p class="text-sm text-slate-500 mt-1">If you find any abuse, phishing, or Terms violations, please report it here.</p>
   </div>
 
   <div class="space-y-4">
     <div>
-      <label class="block text-sm font-medium mb-1">违规子网域</label>
+      <label class="block text-sm font-medium mb-1">Violating Subdomain</label>
       <div class="flex items-center gap-2">
         <input id="report-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
         <span class="text-slate-500">.sbgov.tw</span>
@@ -37,19 +37,18 @@
     </div>
     
     <div>
-      <label class="block text-sm font-medium mb-1">违规原因</label>
-      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="请描述具体违规行为（如：钓鱼、诈骗、恶意软件等）"></textarea>
+      <label class="block text-sm font-medium mb-1">Reason for Report</label>
+      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Please describe the violation (e.g., phishing, scam, malware)"></textarea>
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">您的联系方式（选填）</label>
-      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord（方便我们通知您处理结果）">
+      <label class="block text-sm font-medium mb-1">Your Contact Info (Optional)</label>
+      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord (so we can notify you)">
     </div>
 
     <div id="report-turnstile"></div>
-    <!-- 無 Emoji 的亮眼按鈕 -->
-    <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">送出举报</button>
-    <p id="report-msg" class="text-sm min-h-[1.25rem]"></p>
+    <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">SUBMIT REPORT</button>
+    <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
   </div>
 </div>
 
@@ -57,10 +56,10 @@
 <script>
   SBGOV.initTurnstile();
   SBGOV.bindReport({
-    loading: "发送中…",
-    success: "举报已送出，感谢您的回报",
-    fail: "发送失败",
-    waitTurnstile: "请先完成人机验证",
+    loading: "Submitting…",
+    success: "Report submitted, thank you",
+    fail: "Submission failed",
+    waitTurnstile: "Please complete the human verification above!",
   });
 </script>
 </body>
