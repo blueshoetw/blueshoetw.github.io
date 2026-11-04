@@ -27,7 +27,12 @@
     <p class="text-sm text-slate-500 mt-1">若发现滥用、钓鱼或违反条款之网域，请在此回报。</p>
   </div>
 
-  <div class="space-y-4">
+  <div class="flex gap-4 border-b">
+    <button id="tab-report" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">填写举报单</button>
+    <button id="tab-report-status" class="px-3 py-2 text-slate-400">查询进度</button>
+  </div>
+
+  <div id="panel-report" class="space-y-4">
     <div>
       <label class="block text-sm font-medium mb-1">违规子网域</label>
       <div class="flex items-center gap-2">
@@ -38,28 +43,73 @@
     
     <div>
       <label class="block text-sm font-medium mb-1">违规原因</label>
-      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="请描述具体违规行为（如：钓鱼、诈骗、恶意软件等）"></textarea>
+      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="请描述具体违规行为"></textarea>
     </div>
 
     <div>
       <label class="block text-sm font-medium mb-1">您的联系方式（选填）</label>
-      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord（方便我们通知您处理结果）">
+      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord">
     </div>
 
     <div id="report-turnstile"></div>
     <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">提交举报</button>
     <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
   </div>
+
+  <div id="panel-report-status" class="space-y-4 hidden">
+    <div>
+      <label class="block text-sm font-medium mb-1">请输入举报码</label>
+      <input id="rstatus-code" class="w-full border rounded-lg px-3 py-2 font-mono uppercase" placeholder="RPT-XXXXXXXX">
+    </div>
+    <div id="report-status-turnstile"></div>
+    <button id="rstatus-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">查询进度</button>
+    <div id="rstatus-out" class="text-sm space-y-1"></div>
+  </div>
 </div>
 
-<script src="./assets/common.js?v=2"></script>
+<script src="./assets/common.js?v=4"></script>
 <script>
   SBGOV.initTurnstile();
+  
+  document.getElementById("tab-report").onclick = () => {
+    document.getElementById("panel-report").classList.remove("hidden");
+    document.getElementById("panel-report-status").classList.add("hidden");
+    document.getElementById("tab-report").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.remove("text-slate-400");
+    document.getElementById("tab-report-status").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.add("text-slate-400");
+  };
+  
+  document.getElementById("tab-report-status").onclick = () => {
+    document.getElementById("panel-report").classList.add("hidden");
+    document.getElementById("panel-report-status").classList.remove("hidden");
+    document.getElementById("tab-report-status").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.remove("text-slate-400");
+    document.getElementById("tab-report").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.add("text-slate-400");
+  };
+
   SBGOV.bindReport({
     loading: "提交中…",
-    success: "举报已送出，感谢您的回报",
+    success: "举报已送出！举报码：",
     fail: "提交失败",
-    waitTurnstile: "请先完成上方的人机验证！",
+    waitTurnstile: "请先完成人机验证！",
+    alertEmpty: "请填写违规子网域与原因！",
+    alertSuccess: "举报已送出！\n\n您的举报码是：{code}\n请务必记下这组号码，以便日后查询进度。",
+    alertFail: "提交失败："
+  });
+  
+  SBGOV.bindReportStatus({
+    loading: "查询中…",
+    waitTurnstile: "请先完成人机验证！",
+    alertEmpty: "请输入举报码",
+    codeLabel: "举报码",
+    statusLabel: "目前进度",
+    pendingMsg: "等待管理员处理",
+    resolvedMsg: "已处理完毕",
+    timeLabel: "送出时间",
+    replyLabel: "管理员回覆",
+    deleteMsg: "系统将于 2 天后自动删除此纪录。"
   });
 </script>
 </body>
