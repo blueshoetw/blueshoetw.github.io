@@ -9,10 +9,14 @@
 </head>
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
-  <div class="flex justify-between items-center text-sm">
-    <div class="space-x-3">
+  
+  <!-- 頂部導航列 (醒目檢舉按鈕在此) -->
+  <div class="flex justify-between items-center text-sm border-b pb-4">
+    <div class="flex items-center space-x-3">
       <a href="./privacy/" class="text-slate-400 hover:text-slate-900">隐私政策</a>
       <a href="./terms/" class="text-slate-400 hover:text-slate-900">使用条款</a>
+      <!-- 醒目檢舉按鈕 -->
+      <a href="./report-zh-cn.html" class="bg-red-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-red-700 font-bold transition">举报</a>
     </div>
     <div class="space-x-3">
       <a href="./index.html" class="text-slate-400 hover:text-slate-900">繁中</a>
@@ -71,11 +75,6 @@
     <div id="status-out" class="text-sm space-y-1"></div>
   </div>
 </div>
-
-<!-- 浮動檢舉按鈕 -->
-<a href="./report-zh-cn.html" class="fixed bottom-6 right-6 bg-red-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-red-700 transform transition-all duration-200 hover:scale-110 animate-pulse z-50 font-bold">
-  举报违规
-</a>
 
 <script src="./assets/common.js"></script>
 <script>
