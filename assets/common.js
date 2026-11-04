@@ -1,4 +1,3 @@
-// ===== 唯一需要修改的地方 =====
 window.SBGOV_CONFIG = {
   API_BASE: "https://api.sbgov.tw",
   TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV", 
@@ -9,56 +8,55 @@ window.SBGOV_CONFIG = {
   let applyWidgetId = null;
   let statusWidgetId = null;
   let reportWidgetId = null;
-  const tokens = { apply: "", status: "", report: "" };
+  let reportStatusWidgetId = null;
+  const tokens = { apply: "", status: "", report: "", report_status: "" };
 
   function initTurnstile() {
-    if (typeof turnstile === "undefined") {
-      console.error("Turnstile 腳本未載入！請檢查網路或被廣告攔截器阻擋。");
-      return;
-    }
+    if (typeof turnstile === "undefined") return;
 
     if (document.getElementById("apply-turnstile")) {
       applyWidgetId = turnstile.render("#apply-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "apply", theme: "light",
-        callback: (t) => { tokens.apply = t; console.log("Apply Turnstile OK"); },
+        callback: (t) => { tokens.apply = t; },
         "expired-callback": () => { tokens.apply = ""; },
-        "error-callback": (e) => { console.error("Apply Turnstile 錯誤:", e); },
       });
     }
 
     if (document.getElementById("status-turnstile")) {
       statusWidgetId = turnstile.render("#status-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "status", theme: "light",
-        callback: (t) => { tokens.status = t; console.log("Status Turnstile OK"); },
+        callback: (t) => { tokens.status = t; },
         "expired-callback": () => { tokens.status = ""; },
-        "error-callback": (e) => { console.error("Status Turnstile 錯誤:", e); },
       });
     }
 
     if (document.getElementById("report-turnstile")) {
       reportWidgetId = turnstile.render("#report-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "report", theme: "light",
-        callback: (t) => { tokens.report = t; console.log("Report Turnstile OK"); },
+        callback: (t) => { tokens.report = t; },
         "expired-callback": () => { tokens.report = ""; },
-        "error-callback": (e) => { console.error("Report Turnstile 錯誤:", e); },
+      });
+    }
+    
+    if (document.getElementById("report-status-turnstile")) {
+      reportStatusWidgetId = turnstile.render("#report-status-turnstile", {
+        sitekey: cfg.TURNSTILE_SITEKEY, action: "report_status", theme: "light",
+        callback: (t) => { tokens.report_status = t; },
+        "expired-callback": () => { tokens.report_status = ""; },
       });
     }
   }
 
   async function apiPost(path, payload) {
     try {
-      console.log(`[API] 發送請求到 ${cfg.API_BASE + path}`, payload);
       const r = await fetch(cfg.API_BASE + path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const resData = await r.json();
-      console.log(`[API] 回應 (${r.status}):`, resData);
-      return resData;
+      return await r.json();
     } catch (e) {
-      console.error("API 連線失敗:", e);
-      return { ok: false, error: "網路連線失敗，請檢查 F12 Console" };
+      return { ok: false, error: "Network error / 網路連線失敗" };
     }
   }
 
@@ -98,15 +96,15 @@ window.SBGOV_CONFIG = {
       const msg = document.getElementById("apply-msg");
 
       if (!tokens.apply) {
-        msg.className = "text-sm text-amber-600"; msg.textContent = opts.waitTurnstile || "請先完成人機驗證"; return;
+        msg.className = "text-sm text-amber-600"; msg.textContent = opts.waitTurnstile || "Please complete verification"; return;
       }
-      msg.className = "text-sm text-slate-400"; msg.textContent = opts.loading || "提交中…";
+      msg.className = "text-sm text-slate-400"; msg.textContent = opts.loading || "Submitting…";
       const j = await apiPost("/api/apply", {
         subdomain: sub, github_target: tgt, contact: contact, turnstile_token: tokens.apply,
       });
       tokens.apply = ""; if (applyWidgetId) turnstile.reset(applyWidgetId);
       msg.className = "text-sm " + (j.ok ? "text-green-600" : "text-red-600");
-      msg.textContent = j.ok ? (opts.success || j.message) : (j.error || opts.fail || "提交失敗");
+      msg.textContent = j.ok ? (opts.success || j.message) : (j.error || opts.fail || "Failed");
     };
   }
 
@@ -116,19 +114,19 @@ window.SBGOV_CONFIG = {
     btn.onclick = async () => {
       const sub = document.getElementById("status-sub").value.trim().toLowerCase();
       const out = document.getElementById("status-out");
-      if (!tokens.status) { out.innerHTML = `<p class="text-amber-600">${opts.waitTurnstile || "請先完成人機驗證"}</p>`; return; }
-      out.innerHTML = `<p class="text-slate-400">${opts.loading || "查詢中…"}</p>`;
+      if (!tokens.status) { out.innerHTML = `<p class="text-amber-600">${opts.waitTurnstile || "Please complete verification"}</p>`; return; }
+      out.innerHTML = `<p class="text-slate-400">${opts.loading || "Checking…"}</p>`;
       const j = await apiPost("/api/status", { subdomain: sub, turnstile_token: tokens.status });
       tokens.status = ""; if (statusWidgetId) turnstile.reset(statusWidgetId);
       if (!j.ok) { out.innerHTML = `<p class="text-red-600">${j.error}</p>`; return; }
       const d = j.data;
       const label = (opts.labels && opts.labels[d.status]) || [d.status, ""];
       out.innerHTML = `
-        <p>${opts.subdomainLabel || "子網域"}：<b>${d.subdomain}.sbgov.tw</b></p>
-        <p>${opts.statusLabel || "狀態"}：<span class="${label[1]} font-semibold">${label[0]}</span></p>
-        ${d.blocked ? `<p class="text-red-700 font-semibold">${opts.blockedLabel || "此子網域已被封禁"}</p>` : ""}
-        ${d.status === "rejected" && d.reject_reason ? `<p class="text-slate-600">${opts.reasonLabel || "原因"}：${d.reject_reason}</p>` : ""}
-        <p class="text-slate-400">${opts.timeLabel || "申請時間"}：${d.created_at}</p>`;
+        <p>${opts.subdomainLabel || "Subdomain"}：<b>${d.subdomain}.sbgov.tw</b></p>
+        <p>${opts.statusLabel || "Status"}：<span class="${label[1]} font-semibold">${label[0]}</span></p>
+        ${d.blocked ? `<p class="text-red-700 font-semibold">${opts.blockedLabel || "Blocked"}</p>` : ""}
+        ${d.status === "rejected" && d.reject_reason ? `<p class="text-slate-600">${opts.reasonLabel || "Reason"}：${d.reject_reason}</p>` : ""}
+        <p class="text-slate-400">${opts.timeLabel || "Applied at"}：${d.created_at}</p>`;
     };
   }
 
@@ -143,19 +141,17 @@ window.SBGOV_CONFIG = {
 
       if (!sub || !reason) {
         msg.className = "text-sm font-bold text-red-600 mt-2";
-        msg.textContent = "請填寫違規子網域與原因！";
-        alert("請填寫違規子網域與原因！");
+        msg.textContent = opts.alertEmpty || "Please fill in all fields";
         return;
       }
 
       if (!tokens.report) {
         msg.className = "text-sm font-bold text-red-600 mt-2"; 
-        msg.textContent = "請先完成上方的人機驗證！";
-        alert("請先完成上方的人機驗證！");
+        msg.textContent = opts.waitTurnstile || "Please complete verification";
         return;
       }
       
-      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = "提交中…";
+      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = opts.loading || "Submitting…";
       
       const j = await apiPost("/api/report", {
         subdomain: sub, reason: reason, contact: contact, turnstile_token: tokens.report,
@@ -165,19 +161,75 @@ window.SBGOV_CONFIG = {
       if (reportWidgetId) turnstile.reset(reportWidgetId);
       
       if (j.ok) {
+        const successMsg = (opts.alertSuccess || "Report submitted! Your code is: {code}\nPlease keep it safe.").replace("{code}", j.report_code);
+        alert(successMsg);
+        
         msg.className = "text-sm font-bold text-green-600 mt-2";
-        msg.textContent = opts.success || j.message;
-        alert("檢舉已送出，感謝您的回報！");
+        msg.innerHTML = `${opts.success || "Submitted"} <span class="text-lg select-all font-mono">${j.report_code}</span>`;
+        
         document.getElementById("report-sub").value = "";
         document.getElementById("report-reason").value = "";
         document.getElementById("report-contact").value = "";
+        
+        if (document.getElementById("tab-report-status")) {
+          document.getElementById("tab-report-status").click();
+          document.getElementById("rstatus-code").value = j.report_code;
+        }
       } else {
         msg.className = "text-sm font-bold text-red-600 mt-2";
-        msg.textContent = j.error || opts.fail || "提交失敗";
-        alert("提交失敗：" + (j.error || "請看 F12 主控台"));
+        msg.textContent = j.error || opts.fail || "Failed";
+        alert((opts.alertFail || "Submission failed: ") + (j.error || ""));
       }
     };
   }
 
-  window.SBGOV = { initTurnstile, apiPost, setupTabs, bindApply, bindStatus, bindReport };
+  function bindReportStatus(opts) {
+    const btn = document.getElementById("rstatus-go");
+    if (!btn) return;
+    btn.onclick = async () => {
+      const code = document.getElementById("rstatus-code").value.trim().toUpperCase();
+      const out = document.getElementById("rstatus-out");
+
+      if (!code) {
+        out.innerHTML = `<p class="text-red-600">${opts.alertEmpty || "Please enter a code"}</p>`;
+        return;
+      }
+      
+      if (!tokens.report_status) { 
+        out.innerHTML = `<p class="text-amber-600">${opts.waitTurnstile || "Please complete verification"}</p>`; 
+        return; 
+      }
+      
+      out.innerHTML = `<p class="text-slate-400">${opts.loading || "Checking…"}</p>`;
+      
+      const j = await apiPost("/api/report/status", { report_code: code, turnstile_token: tokens.report_status });
+      
+      tokens.report_status = ""; 
+      if (reportStatusWidgetId) turnstile.reset(reportStatusWidgetId);
+      
+      if (!j.ok) { 
+        out.innerHTML = `<p class="text-red-600">${j.error}</p>`; 
+        return; 
+      }
+      
+      const d = j.data;
+      const isPending = d.status === 'pending';
+      
+      out.innerHTML = `
+        <div class="bg-slate-50 p-4 rounded-lg mt-4">
+          <p class="mb-2"><b>${opts.codeLabel || "Code"}：</b> <span class="font-mono">${code}</span></p>
+          <p class="mb-2"><b>${opts.statusLabel || "Status"}：</b> 
+            <span class="font-semibold ${isPending ? 'text-amber-600' : 'text-green-600'}">
+              ${isPending ? (opts.pendingMsg || '待處理') : (opts.resolvedMsg || '已處理')}
+            </span>
+          </p>
+          <p class="mb-2"><b>${opts.timeLabel || "Submitted at"}：</b> ${d.created_at}</p>
+          ${d.admin_reply ? `<div class="mt-4 p-3 bg-white border rounded text-sm"><b>${opts.replyLabel || "Reply"}：</b><br>${d.admin_reply}</div>` : ""}
+          ${!isPending ? `<p class="text-xs text-slate-400 mt-4">${opts.deleteMsg || '系統將於 2 天後自動刪除此紀錄。'}</p>` : ""}
+        </div>
+      `;
+    };
+  }
+
+  window.SBGOV = { initTurnstile, apiPost, setupTabs, bindApply, bindStatus, bindReport, bindReportStatus };
 })();
