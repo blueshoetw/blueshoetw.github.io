@@ -3,112 +3,63 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>申請 sbgov.tw 子網域</title>
+<title>檢舉違規網域 - sbgov.tw</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
-  
-  <!-- 頂部導航列 -->
   <div class="flex justify-between items-center text-sm border-b pb-4">
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-3">
+      <a href="./index.html" class="text-slate-400 hover:text-slate-900">首頁</a>
       <a href="./privacy/" class="text-slate-400 hover:text-slate-900">隱私政策</a>
       <a href="./terms/" class="text-slate-400 hover:text-slate-900">使用條款</a>
-      <a href="./report.html" class="text-red-600 hover:text-red-800 font-bold">檢舉</a>
     </div>
     <div class="space-x-3">
-      <a href="./index.html" class="text-slate-900 font-semibold">繁中</a>
-      <a href="./index-en.html" class="text-slate-400 hover:text-slate-900">EN</a>
-      <a href="./index-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
+      <a href="./report.html" class="text-slate-900 font-semibold">繁中</a>
+      <a href="./report-en.html" class="text-slate-400 hover:text-slate-900">EN</a>
+      <a href="./report-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
     </div>
   </div>
-
-  <!-- 醒目檢舉橫幅 -->
-  <a href="./report.html" class="block bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg hover:bg-red-100 transition group">
-    <div class="flex justify-between items-center">
-      <div>
-        <p class="text-sm font-bold text-red-800">發現濫用、釣魚或違規網域？</p>
-        <p class="text-xs text-red-600 mt-1">若發現任何違反使用條款的行為，請協助我們檢舉。</p>
-      </div>
-      <span class="bg-red-600 text-white px-4 py-2 rounded shadow font-bold text-sm whitespace-nowrap ml-4 group-hover:bg-red-700 transition">前往檢舉</span>
-    </div>
-  </a>
 
   <div>
-    <h1 class="text-2xl font-bold">申請免費子網域</h1>
-    <p class="text-sm text-slate-500 mt-1">導向你的 GitHub Pages（*.github.io）</p>
+    <h1 class="text-2xl font-bold text-red-600">檢舉違規網域</h1>
+    <p class="text-sm text-slate-500 mt-1">若發現濫用、釣魚或違反條款之網域，請在此回報。</p>
   </div>
 
-  <div class="flex gap-4 border-b">
-    <button id="tab-apply" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">申請</button>
-    <button id="tab-status" class="px-3 py-2 text-slate-400">查詢</button>
-  </div>
-
-  <div id="panel-apply" class="space-y-4">
+  <div class="space-y-4">
     <div>
-      <label class="block text-sm font-medium mb-1">子網域</label>
+      <label class="block text-sm font-medium mb-1">違規子網域</label>
       <div class="flex items-center gap-2">
-        <input id="apply-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
+        <input id="report-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
         <span class="text-slate-500">.sbgov.tw</span>
       </div>
     </div>
     
     <div>
-      <label class="block text-sm font-medium mb-1">GitHub Pages 目標</label>
-      <input id="apply-tgt" class="w-full border rounded-lg px-3 py-2" placeholder="username.github.io">
+      <label class="block text-sm font-medium mb-1">違規原因</label>
+      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="請描述具體違規行為（如：釣魚、詐騙、惡意軟體等）"></textarea>
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">聯繫方式（強烈建議填寫）</label>
-      <input id="apply-contact" class="w-full border rounded-lg px-3 py-2" placeholder="例如：您的 Discord / Email">
-      <p class="text-red-500 text-xs mt-1 leading-relaxed">
-        提示：若未提供有效聯繫方式，可能導致審核無法通過；日後若發生違規且無法聯繫您，該網域將被直接暫停使用。
-      </p>
+      <label class="block text-sm font-medium mb-1">您的聯繫方式（選填）</label>
+      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord（方便我們通知您處理結果）">
     </div>
 
-    <div id="apply-turnstile"></div>
-    <button id="apply-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">提交申請</button>
-    <p id="apply-msg" class="text-sm min-h-[1.25rem]"></p>
-  </div>
-
-  <div id="panel-status" class="space-y-4 hidden">
-    <div>
-      <label class="block text-sm font-medium mb-1">子網域</label>
-      <div class="flex items-center gap-2">
-        <input id="status-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
-        <span class="text-slate-500">.sbgov.tw</span>
-      </div>
-    </div>
-    <div id="status-turnstile"></div>
-    <button id="status-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">查詢</button>
-    <div id="status-out" class="text-sm space-y-1"></div>
+    <div id="report-turnstile"></div>
+    <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">送出檢舉</button>
+    <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
   </div>
 </div>
 
 <script src="./assets/common.js"></script>
 <script>
   SBGOV.initTurnstile();
-  SBGOV.setupTabs();
-  SBGOV.bindApply({
-    loading: "提交中…",
-    success: "已提交，等待審核",
-    fail: "提交失敗",
-    waitTurnstile: "請先完成人機驗證",
-  });
-  SBGOV.bindStatus({
-    loading: "查詢中…",
-    subdomainLabel: "子網域",
-    statusLabel: "狀態",
-    blockedLabel: "此子網域已被封禁",
-    reasonLabel: "原因",
-    timeLabel: "申請時間",
-    waitTurnstile: "請先完成人機驗證",
-    labels: {
-      pending:  ["審核中", "text-yellow-600"],
-      approved: ["已通過", "text-green-600"],
-      rejected: ["已拒絕", "text-red-600"],
-    },
+  SBGOV.bindReport({
+    loading: "傳送中…",
+    success: "檢舉已送出，感謝您的回報",
+    fail: "傳送失敗",
+    waitTurnstile: "請先完成上方的人機驗證！",
   });
 </script>
 </body>
