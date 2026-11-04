@@ -27,7 +27,12 @@
     <p class="text-sm text-slate-500 mt-1">若發現濫用、釣魚或違反條款之網域，請在此回報。</p>
   </div>
 
-  <div class="space-y-4">
+  <div class="flex gap-4 border-b">
+    <button id="tab-report" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">填寫檢舉單</button>
+    <button id="tab-report-status" class="px-3 py-2 text-slate-400">查詢進度</button>
+  </div>
+
+  <div id="panel-report" class="space-y-4">
     <div>
       <label class="block text-sm font-medium mb-1">違規子網域</label>
       <div class="flex items-center gap-2">
@@ -38,28 +43,73 @@
     
     <div>
       <label class="block text-sm font-medium mb-1">違規原因</label>
-      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="請描述具體違規行為（如：釣魚、詐騙、惡意軟體等）"></textarea>
+      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="請描述具體違規行為"></textarea>
     </div>
 
     <div>
       <label class="block text-sm font-medium mb-1">您的聯繫方式（選填）</label>
-      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord（方便我們通知您處理結果）">
+      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord">
     </div>
 
     <div id="report-turnstile"></div>
     <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">送出檢舉</button>
     <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
   </div>
+
+  <div id="panel-report-status" class="space-y-4 hidden">
+    <div>
+      <label class="block text-sm font-medium mb-1">請輸入檢舉碼</label>
+      <input id="rstatus-code" class="w-full border rounded-lg px-3 py-2 font-mono uppercase" placeholder="RPT-XXXXXXXX">
+    </div>
+    <div id="report-status-turnstile"></div>
+    <button id="rstatus-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">查詢進度</button>
+    <div id="rstatus-out" class="text-sm space-y-1"></div>
+  </div>
 </div>
 
-<script src="./assets/common.js?v=2"></script>
+<script src="./assets/common.js?v=4"></script>
 <script>
   SBGOV.initTurnstile();
+  
+  document.getElementById("tab-report").onclick = () => {
+    document.getElementById("panel-report").classList.remove("hidden");
+    document.getElementById("panel-report-status").classList.add("hidden");
+    document.getElementById("tab-report").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.remove("text-slate-400");
+    document.getElementById("tab-report-status").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.add("text-slate-400");
+  };
+  
+  document.getElementById("tab-report-status").onclick = () => {
+    document.getElementById("panel-report").classList.add("hidden");
+    document.getElementById("panel-report-status").classList.remove("hidden");
+    document.getElementById("tab-report-status").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.remove("text-slate-400");
+    document.getElementById("tab-report").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.add("text-slate-400");
+  };
+
   SBGOV.bindReport({
     loading: "傳送中…",
-    success: "檢舉已送出，感謝您的回報",
+    success: "檢舉已送出！檢舉碼：",
     fail: "傳送失敗",
-    waitTurnstile: "請先完成上方的人機驗證！",
+    waitTurnstile: "請先完成人機驗證！",
+    alertEmpty: "請填寫違規子網域與原因！",
+    alertSuccess: "檢舉已送出！\n\n您的檢舉碼是：{code}\n請務必記下這組號碼，以便日後查詢進度。",
+    alertFail: "提交失敗："
+  });
+  
+  SBGOV.bindReportStatus({
+    loading: "查詢中…",
+    waitTurnstile: "請先完成人機驗證！",
+    alertEmpty: "請輸入檢舉碼",
+    codeLabel: "檢舉碼",
+    statusLabel: "目前進度",
+    pendingMsg: "等待管理員處理",
+    resolvedMsg: "已處理完畢",
+    timeLabel: "送出時間",
+    replyLabel: "管理員回覆",
+    deleteMsg: "系統將於 2 天後自動刪除此紀錄。"
   });
 </script>
 </body>
