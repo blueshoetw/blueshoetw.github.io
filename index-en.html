@@ -10,13 +10,11 @@
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
   
-  <!-- 頂部導航列 (醒目檢舉按鈕在此) -->
   <div class="flex justify-between items-center text-sm border-b pb-4">
-    <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-4">
       <a href="./privacy/" class="text-slate-400 hover:text-slate-900">Privacy</a>
       <a href="./terms/" class="text-slate-400 hover:text-slate-900">Terms</a>
-      <!-- 醒目檢舉按鈕 -->
-      <a href="./report-en.html" class="bg-red-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-red-700 font-bold transition">Report</a>
+      <a href="./report-en.html" class="text-red-600 hover:text-red-800 font-bold">Report</a>
     </div>
     <div class="space-x-3">
       <a href="./index.html" class="text-slate-400 hover:text-slate-900">繁中</a>
@@ -24,6 +22,16 @@
       <a href="./index-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
     </div>
   </div>
+
+  <a href="./report-en.html" class="block bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg hover:bg-red-100 transition group">
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-sm font-bold text-red-800">Find abuse, phishing, or violations?</p>
+        <p class="text-xs text-red-600 mt-1">If you see any Terms violations, please help us by reporting.</p>
+      </div>
+      <span class="bg-red-600 text-white px-4 py-2 rounded shadow font-bold text-sm whitespace-nowrap ml-4 group-hover:bg-red-700 transition">Report Now</span>
+    </div>
+  </a>
 
   <div>
     <h1 class="text-2xl font-bold">Apply for a Free Subdomain</h1>
