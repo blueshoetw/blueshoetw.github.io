@@ -27,7 +27,12 @@
     <p class="text-sm text-slate-500 mt-1">If you find any abuse, phishing, or Terms violations, please report it here.</p>
   </div>
 
-  <div class="space-y-4">
+  <div class="flex gap-4 border-b">
+    <button id="tab-report" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">Submit Report</button>
+    <button id="tab-report-status" class="px-3 py-2 text-slate-400">Check Status</button>
+  </div>
+
+  <div id="panel-report" class="space-y-4">
     <div>
       <label class="block text-sm font-medium mb-1">Violating Subdomain</label>
       <div class="flex items-center gap-2">
@@ -38,28 +43,73 @@
     
     <div>
       <label class="block text-sm font-medium mb-1">Reason for Report</label>
-      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Please describe the violation (e.g., phishing, scam, malware)"></textarea>
+      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Please describe the violation"></textarea>
     </div>
 
     <div>
       <label class="block text-sm font-medium mb-1">Your Contact Info (Optional)</label>
-      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord (so we can notify you)">
+      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord">
     </div>
 
     <div id="report-turnstile"></div>
     <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">SUBMIT REPORT</button>
     <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
   </div>
+
+  <div id="panel-report-status" class="space-y-4 hidden">
+    <div>
+      <label class="block text-sm font-medium mb-1">Enter Report Code</label>
+      <input id="rstatus-code" class="w-full border rounded-lg px-3 py-2 font-mono uppercase" placeholder="RPT-XXXXXXXX">
+    </div>
+    <div id="report-status-turnstile"></div>
+    <button id="rstatus-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">Check Status</button>
+    <div id="rstatus-out" class="text-sm space-y-1"></div>
+  </div>
 </div>
 
-<script src="./assets/common.js?v=2"></script>
+<script src="./assets/common.js?v=4"></script>
 <script>
   SBGOV.initTurnstile();
+  
+  document.getElementById("tab-report").onclick = () => {
+    document.getElementById("panel-report").classList.remove("hidden");
+    document.getElementById("panel-report-status").classList.add("hidden");
+    document.getElementById("tab-report").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.remove("text-slate-400");
+    document.getElementById("tab-report-status").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.add("text-slate-400");
+  };
+  
+  document.getElementById("tab-report-status").onclick = () => {
+    document.getElementById("panel-report").classList.add("hidden");
+    document.getElementById("panel-report-status").classList.remove("hidden");
+    document.getElementById("tab-report-status").classList.add("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report-status").classList.remove("text-slate-400");
+    document.getElementById("tab-report").classList.remove("border-b-2", "border-slate-900", "font-semibold");
+    document.getElementById("tab-report").classList.add("text-slate-400");
+  };
+
   SBGOV.bindReport({
     loading: "Submitting…",
-    success: "Report submitted, thank you",
+    success: "Submitted! Code:",
     fail: "Submission failed",
-    waitTurnstile: "Please complete the human verification above!",
+    waitTurnstile: "Please complete the human verification!",
+    alertEmpty: "Please fill in the subdomain and reason!",
+    alertSuccess: "Report submitted!\n\nYour report code is: {code}\nPlease keep it safe to check the status later.",
+    alertFail: "Submission failed: "
+  });
+  
+  SBGOV.bindReportStatus({
+    loading: "Checking…",
+    waitTurnstile: "Please complete the human verification!",
+    alertEmpty: "Please enter a report code",
+    codeLabel: "Code",
+    statusLabel: "Status",
+    pendingMsg: "Pending admin review",
+    resolvedMsg: "Resolved",
+    timeLabel: "Submitted at",
+    replyLabel: "Admin Reply",
+    deleteMsg: "This record will be automatically deleted in 2 days."
   });
 </script>
 </body>
