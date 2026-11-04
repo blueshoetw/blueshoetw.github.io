@@ -1,7 +1,7 @@
 // ===== 唯一需要修改的地方 =====
 window.SBGOV_CONFIG = {
   API_BASE: "https://api.sbgov.tw",
-  TURNSTILE_SITEKEY: "請填入 Turnstile Sitekey", 
+  TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV", 
 };
 
 (function () {
