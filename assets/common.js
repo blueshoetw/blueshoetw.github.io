@@ -1,7 +1,7 @@
 // ===== 唯一需要修改的地方 =====
 window.SBGOV_CONFIG = {
   API_BASE: "https://api.sbgov.tw",
-  TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV",
+  TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV", // 如果你沒填真實的 Sitekey，驗證框不會出來
 };
 
 (function () {
@@ -12,14 +12,17 @@ window.SBGOV_CONFIG = {
   const tokens = { apply: "", status: "", report: "" };
 
   function initTurnstile() {
-    if (typeof turnstile === "undefined") return;
+    if (typeof turnstile === "undefined") {
+      console.error("Turnstile 腳本未載入！請檢查網路或被廣告攔截器阻擋。");
+      return;
+    }
 
     if (document.getElementById("apply-turnstile")) {
       applyWidgetId = turnstile.render("#apply-turnstile", {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "apply", theme: "light",
         callback: (t) => { tokens.apply = t; },
         "expired-callback": () => { tokens.apply = ""; },
-        "error-callback": () => { tokens.apply = ""; },
+        "error-callback": (e) => { console.error("Turnstile Apply 錯誤:", e); },
       });
     }
 
@@ -28,7 +31,7 @@ window.SBGOV_CONFIG = {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "status", theme: "light",
         callback: (t) => { tokens.status = t; },
         "expired-callback": () => { tokens.status = ""; },
-        "error-callback": () => { tokens.status = ""; },
+        "error-callback": (e) => { console.error("Turnstile Status 錯誤:", e); },
       });
     }
 
@@ -37,7 +40,7 @@ window.SBGOV_CONFIG = {
         sitekey: cfg.TURNSTILE_SITEKEY, action: "report", theme: "light",
         callback: (t) => { tokens.report = t; },
         "expired-callback": () => { tokens.report = ""; },
-        "error-callback": () => { tokens.report = ""; },
+        "error-callback": (e) => { console.error("Turnstile Report 錯誤:", e); },
       });
     }
   }
@@ -51,7 +54,8 @@ window.SBGOV_CONFIG = {
       });
       return await r.json();
     } catch (e) {
-      return { ok: false, error: "網路錯誤 / Network Error: " + e };
+      console.error("API 連線失敗:", e);
+      return { ok: false, error: "網路連線失敗，請檢查 Console" };
     }
   }
 
@@ -91,14 +95,17 @@ window.SBGOV_CONFIG = {
       const msg = document.getElementById("apply-msg");
 
       if (!tokens.apply) {
-        msg.className = "text-sm text-amber-600"; msg.textContent = opts.waitTurnstile || "請先完成人機驗證"; return;
+        msg.className = "text-sm font-bold text-red-600 mt-2"; 
+        msg.textContent = opts.waitTurnstile || "請先完成上方的人機驗證！";
+        alert("請先完成上方的人機驗證！若驗證框沒出現，請確認 Sitekey 是否正確。");
+        return;
       }
-      msg.className = "text-sm text-slate-400"; msg.textContent = opts.loading || "提交中…";
+      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = opts.loading || "提交中…";
       const j = await apiPost("/api/apply", {
         subdomain: sub, github_target: tgt, contact: contact, turnstile_token: tokens.apply,
       });
       tokens.apply = ""; if (applyWidgetId) turnstile.reset(applyWidgetId);
-      msg.className = "text-sm " + (j.ok ? "text-green-600" : "text-red-600");
+      msg.className = "text-sm font-bold mt-2 " + (j.ok ? "text-green-600" : "text-red-600");
       msg.textContent = j.ok ? (opts.success || j.message) : (j.error || opts.fail || "提交失敗");
     };
   }
@@ -109,11 +116,15 @@ window.SBGOV_CONFIG = {
     btn.onclick = async () => {
       const sub = document.getElementById("status-sub").value.trim().toLowerCase();
       const out = document.getElementById("status-out");
-      if (!tokens.status) { out.innerHTML = `<p class="text-amber-600">${opts.waitTurnstile || "請先完成人機驗證"}</p>`; return; }
+      if (!tokens.status) { 
+        out.innerHTML = `<p class="font-bold text-red-600">${opts.waitTurnstile || "請先完成人機驗證"}</p>`; 
+        alert("請先完成人機驗證！");
+        return; 
+      }
       out.innerHTML = `<p class="text-slate-400">${opts.loading || "查詢中…"}</p>`;
       const j = await apiPost("/api/status", { subdomain: sub, turnstile_token: tokens.status });
       tokens.status = ""; if (statusWidgetId) turnstile.reset(statusWidgetId);
-      if (!j.ok) { out.innerHTML = `<p class="text-red-600">${j.error}</p>`; return; }
+      if (!j.ok) { out.innerHTML = `<p class="font-bold text-red-600">${j.error}</p>`; return; }
       const d = j.data;
       const label = (opts.labels && opts.labels[d.status]) || [d.status, ""];
       out.innerHTML = `
@@ -134,21 +145,39 @@ window.SBGOV_CONFIG = {
       const contact = document.getElementById("report-contact").value.trim();
       const msg = document.getElementById("report-msg");
 
-      if (!tokens.report) {
-        msg.className = "text-sm text-amber-600"; msg.textContent = opts.waitTurnstile || "請先完成人機驗證"; return;
+      if (!sub || !reason) {
+        msg.className = "text-sm font-bold text-red-600 mt-2";
+        msg.textContent = "請填寫違規子網域與原因！";
+        alert("請填寫違規子網域與原因！");
+        return;
       }
-      msg.className = "text-sm text-slate-400"; msg.textContent = opts.loading || "提交中…";
+
+      if (!tokens.report) {
+        msg.className = "text-sm font-bold text-red-600 mt-2"; 
+        msg.textContent = opts.waitTurnstile || "請先完成上方的人機驗證！";
+        alert("請先完成上方的人機驗證！若驗證框沒出現，請確認 Sitekey 是否正確。");
+        return;
+      }
+      
+      msg.className = "text-sm text-slate-400 mt-2"; msg.textContent = opts.loading || "提交中…";
+      
       const j = await apiPost("/api/report", {
         subdomain: sub, reason: reason, contact: contact, turnstile_token: tokens.report,
       });
+      
       tokens.report = ""; if (reportWidgetId) turnstile.reset(reportWidgetId);
-      msg.className = "text-sm " + (j.ok ? "text-green-600" : "text-red-600");
-      msg.textContent = j.ok ? (opts.success || j.message) : (j.error || opts.fail || "提交失敗");
       
       if (j.ok) {
+        msg.className = "text-sm font-bold text-green-600 mt-2";
+        msg.textContent = opts.success || j.message;
+        alert("檢舉已送出，感謝您的回報！");
         document.getElementById("report-sub").value = "";
         document.getElementById("report-reason").value = "";
         document.getElementById("report-contact").value = "";
+      } else {
+        msg.className = "text-sm font-bold text-red-600 mt-2";
+        msg.textContent = j.error || opts.fail || "提交失敗";
+        alert("提交失敗：" + (j.error || "未知錯誤"));
       }
     };
   }
