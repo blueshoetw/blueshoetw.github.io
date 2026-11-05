@@ -65,6 +65,13 @@
       </p>
     </div>
 
+    <div class="flex items-start gap-2 mt-2">
+      <input type="checkbox" id="apply-agree" class="mt-1 w-4 h-4 cursor-pointer">
+      <label for="apply-agree" class="text-sm text-slate-600 cursor-pointer select-none">
+        我已閱讀並同意 <a href="./terms/" target="_blank" class="text-blue-600 underline hover:text-blue-800">服務條款</a> 與 <a href="./privacy/" target="_blank" class="text-blue-600 underline hover:text-blue-800">隱私政策</a>
+      </label>
+    </div>
+
     <div id="apply-turnstile"></div>
     <button id="apply-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">提交申請</button>
     <p id="apply-msg" class="text-sm min-h-[1.25rem]"></p>
@@ -93,6 +100,7 @@
     success: "已提交，等待審核",
     fail: "提交失敗",
     waitTurnstile: "請先完成人機驗證",
+    alertAgree: "請先勾選同意服務條款與隱私政策",
   });
   SBGOV.bindStatus({
     loading: "查詢中…",
