@@ -1,3 +1,4 @@
+// ===== 唯一需要修改的地方 =====
 window.SBGOV_CONFIG = {
   API_BASE: "https://api.sbgov.tw",
   TURNSTILE_SITEKEY: "0x4AAAAAAFz0DT7MQ8tNo_UV", 
@@ -12,7 +13,10 @@ window.SBGOV_CONFIG = {
   const tokens = { apply: "", status: "", report: "", report_status: "" };
 
   function initTurnstile() {
-    if (typeof turnstile === "undefined") return;
+    if (typeof turnstile === "undefined") {
+      console.error("Turnstile 腳本未載入！請檢查網路或被廣告攔截器阻擋。");
+      return;
+    }
 
     if (document.getElementById("apply-turnstile")) {
       applyWidgetId = turnstile.render("#apply-turnstile", {
@@ -220,12 +224,12 @@ window.SBGOV_CONFIG = {
           <p class="mb-2"><b>${opts.codeLabel || "Code"}：</b> <span class="font-mono">${code}</span></p>
           <p class="mb-2"><b>${opts.statusLabel || "Status"}：</b> 
             <span class="font-semibold ${isPending ? 'text-amber-600' : 'text-green-600'}">
-              ${isPending ? (opts.pendingMsg || '待處理') : (opts.resolvedMsg || '已處理')}
+              ${isPending ? (opts.pendingMsg || 'Pending') : (opts.resolvedMsg || 'Resolved')}
             </span>
           </p>
           <p class="mb-2"><b>${opts.timeLabel || "Submitted at"}：</b> ${d.created_at}</p>
           ${d.admin_reply ? `<div class="mt-4 p-3 bg-white border rounded text-sm"><b>${opts.replyLabel || "Reply"}：</b><br>${d.admin_reply}</div>` : ""}
-          ${!isPending ? `<p class="text-xs text-slate-400 mt-4">${opts.deleteMsg || '系統將於 2 天後自動刪除此紀錄。'}</p>` : ""}
+          ${!isPending ? `<p class="text-xs text-slate-400 mt-4">${opts.deleteMsg || 'This record will be deleted in 2 days.'}</p>` : ""}
         </div>
       `;
     };
