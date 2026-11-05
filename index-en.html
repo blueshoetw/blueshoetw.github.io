@@ -59,10 +59,18 @@
 
     <div>
       <label class="block text-sm font-medium mb-1">Contact Info (Highly Recommended)</label>
-      <input id="apply-contact" class="w-full border rounded-lg px-3 py-2" placeholder="e.g. Discord / Email">
+      <!-- 修改了這裡的提示文字 -->
+      <input id="apply-contact" class="w-full border rounded-lg px-3 py-2" placeholder="e.g. Discord: user#1234 / Email: mail@example.com">
       <p class="text-red-500 text-xs mt-1 leading-relaxed">
         Note: Failure to provide valid contact information may result in the application being rejected. If a violation occurs and we cannot reach you, the subdomain will be suspended.
       </p>
+    </div>
+
+    <div class="flex items-start gap-2 mt-2">
+      <input type="checkbox" id="apply-agree" class="mt-1 w-4 h-4 cursor-pointer">
+      <label for="apply-agree" class="text-sm text-slate-600 cursor-pointer select-none">
+        I have read and agree to the <a href="./terms/" target="_blank" class="text-blue-600 underline hover:text-blue-800">Terms of Service</a> and <a href="./privacy/" target="_blank" class="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>
+      </label>
     </div>
 
     <div id="apply-turnstile"></div>
@@ -93,6 +101,7 @@
     success: "Submitted, awaiting review",
     fail: "Submission failed",
     waitTurnstile: "Please complete the human verification first",
+    alertAgree: "Please agree to the Terms of Service and Privacy Policy",
   });
   SBGOV.bindStatus({
     loading: "Checking…",
