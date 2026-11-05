@@ -3,113 +3,118 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Report Abuse - sbgov.tw</title>
+<title>Apply for sbgov.tw Subdomain</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
 <div class="w-full max-w-lg bg-white rounded-2xl shadow p-8 space-y-6">
+  
   <div class="flex justify-between items-center text-sm border-b pb-4">
-    <div class="flex items-center space-x-3">
-      <a href="./index-en.html" class="text-slate-400 hover:text-slate-900">Home</a>
+    <div class="flex items-center space-x-4">
       <a href="./privacy/" class="text-slate-400 hover:text-slate-900">Privacy</a>
       <a href="./terms/" class="text-slate-400 hover:text-slate-900">Terms</a>
+      <a href="./report-en.html" class="text-red-600 hover:text-red-800 font-bold">Report</a>
     </div>
     <div class="space-x-3">
-      <a href="./report.html" class="text-slate-400 hover:text-slate-900">繁中</a>
-      <a href="./report-en.html" class="text-slate-900 font-semibold">EN</a>
-      <a href="./report-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
+      <a href="./index.html" class="text-slate-400 hover:text-slate-900">繁中</a>
+      <a href="./index-en.html" class="text-slate-900 font-semibold">EN</a>
+      <a href="./index-zh-cn.html" class="text-slate-400 hover:text-slate-900">简中</a>
     </div>
   </div>
 
+  <a href="./report-en.html" class="block bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg hover:bg-red-100 transition group">
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-sm font-bold text-red-800">Find abuse, phishing, or violations?</p>
+        <p class="text-xs text-red-600 mt-1">If you see any Terms violations, please help us by reporting.</p>
+      </div>
+      <span class="bg-red-600 text-white px-4 py-2 rounded shadow font-bold text-sm whitespace-nowrap ml-4 group-hover:bg-red-700 transition">Report Now</span>
+    </div>
+  </a>
+
   <div>
-    <h1 class="text-2xl font-bold text-red-600">Report Abuse</h1>
-    <p class="text-sm text-slate-500 mt-1">If you find any abuse, phishing, or Terms violations, please report it here.</p>
+    <h1 class="text-2xl font-bold">Apply for a Free Subdomain</h1>
+    <p class="text-sm text-slate-500 mt-1">Pointing to your GitHub Pages (*.github.io)</p>
   </div>
 
   <div class="flex gap-4 border-b">
-    <button id="tab-report" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">Submit Report</button>
-    <button id="tab-report-status" class="px-3 py-2 text-slate-400">Check Status</button>
+    <button id="tab-apply" class="px-3 py-2 border-b-2 border-slate-900 font-semibold">Apply</button>
+    <button id="tab-status" class="px-3 py-2 text-slate-400">Check Status</button>
   </div>
 
-  <div id="panel-report" class="space-y-4">
+  <div id="panel-apply" class="space-y-4">
     <div>
-      <label class="block text-sm font-medium mb-1">Violating Subdomain</label>
+      <label class="block text-sm font-medium mb-1">Subdomain</label>
       <div class="flex items-center gap-2">
-        <input id="report-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
+        <input id="apply-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
         <span class="text-slate-500">.sbgov.tw</span>
       </div>
     </div>
     
     <div>
-      <label class="block text-sm font-medium mb-1">Reason for Report</label>
-      <textarea id="report-reason" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Please describe the violation"></textarea>
+      <label class="block text-sm font-medium mb-1">GitHub Pages Target</label>
+      <input id="apply-tgt" class="w-full border rounded-lg px-3 py-2" placeholder="username.github.io">
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-1">Your Contact Info (Optional)</label>
-      <input id="report-contact" class="w-full border rounded-lg px-3 py-2" placeholder="Email / Discord">
+      <label class="block text-sm font-medium mb-1">Contact Info (Highly Recommended)</label>
+      <input id="apply-contact" class="w-full border rounded-lg px-3 py-2" placeholder="e.g. Discord / Email">
+      <p class="text-red-500 text-xs mt-1 leading-relaxed">
+        Note: Failure to provide valid contact information may result in the application being rejected. If a violation occurs and we cannot reach you, the subdomain will be suspended.
+      </p>
     </div>
 
-    <div id="report-turnstile"></div>
-    <button id="report-go" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 animate-pulse font-bold tracking-wider">SUBMIT REPORT</button>
-    <p id="report-msg" class="text-sm min-h-[1.25rem] mt-2"></p>
+    <div class="flex items-start gap-2 mt-2">
+      <input type="checkbox" id="apply-agree" class="mt-1 w-4 h-4 cursor-pointer">
+      <label for="apply-agree" class="text-sm text-slate-600 cursor-pointer select-none">
+        I have read and agree to the <a href="./terms/" target="_blank" class="text-blue-600 underline hover:text-blue-800">Terms of Service</a> and <a href="./privacy/" target="_blank" class="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>
+      </label>
+    </div>
+
+    <div id="apply-turnstile"></div>
+    <button id="apply-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">Submit</button>
+    <p id="apply-msg" class="text-sm min-h-[1.25rem]"></p>
   </div>
 
-  <div id="panel-report-status" class="space-y-4 hidden">
+  <div id="panel-status" class="space-y-4 hidden">
     <div>
-      <label class="block text-sm font-medium mb-1">Enter Report Code</label>
-      <input id="rstatus-code" class="w-full border rounded-lg px-3 py-2 font-mono uppercase" placeholder="RPT-XXXXXXXX">
+      <label class="block text-sm font-medium mb-1">Subdomain</label>
+      <div class="flex items-center gap-2">
+        <input id="status-sub" class="flex-1 border rounded-lg px-3 py-2" placeholder="mysite">
+        <span class="text-slate-500">.sbgov.tw</span>
+      </div>
     </div>
-    <div id="report-status-turnstile"></div>
-    <button id="rstatus-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">Check Status</button>
-    <div id="rstatus-out" class="text-sm space-y-1"></div>
+    <div id="status-turnstile"></div>
+    <button id="status-go" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700">Check</button>
+    <div id="status-out" class="text-sm space-y-1"></div>
   </div>
 </div>
 
 <script src="./assets/common.js?v=5"></script>
 <script>
   SBGOV.initTurnstile();
-  
-  document.getElementById("tab-report").onclick = () => {
-    document.getElementById("panel-report").classList.remove("hidden");
-    document.getElementById("panel-report-status").classList.add("hidden");
-    document.getElementById("tab-report").classList.add("border-b-2", "border-slate-900", "font-semibold");
-    document.getElementById("tab-report").classList.remove("text-slate-400");
-    document.getElementById("tab-report-status").classList.remove("border-b-2", "border-slate-900", "font-semibold");
-    document.getElementById("tab-report-status").classList.add("text-slate-400");
-  };
-  
-  document.getElementById("tab-report-status").onclick = () => {
-    document.getElementById("panel-report").classList.add("hidden");
-    document.getElementById("panel-report-status").classList.remove("hidden");
-    document.getElementById("tab-report-status").classList.add("border-b-2", "border-slate-900", "font-semibold");
-    document.getElementById("tab-report-status").classList.remove("text-slate-400");
-    document.getElementById("tab-report").classList.remove("border-b-2", "border-slate-900", "font-semibold");
-    document.getElementById("tab-report").classList.add("text-slate-400");
-  };
-
-  SBGOV.bindReport({
+  SBGOV.setupTabs();
+  SBGOV.bindApply({
     loading: "Submitting…",
-    success: "Submitted! Code:",
+    success: "Submitted, awaiting review",
     fail: "Submission failed",
-    waitTurnstile: "Please complete the human verification!",
-    alertEmpty: "Please fill in the subdomain and reason!",
-    alertSuccess: "Report submitted!\n\nYour report code is: {code}\nPlease keep it safe to check the status later.",
-    alertFail: "Submission failed: "
+    waitTurnstile: "Please complete the human verification first",
+    alertAgree: "Please agree to the Terms of Service and Privacy Policy",
   });
-  
-  SBGOV.bindReportStatus({
+  SBGOV.bindStatus({
     loading: "Checking…",
-    waitTurnstile: "Please complete the human verification!",
-    alertEmpty: "Please enter a report code",
-    codeLabel: "Code",
+    subdomainLabel: "Subdomain",
     statusLabel: "Status",
-    pendingMsg: "Pending admin review",
-    resolvedMsg: "Resolved",
-    timeLabel: "Submitted at",
-    replyLabel: "Admin Reply",
-    deleteMsg: "This record will be automatically deleted in 2 days."
+    blockedLabel: "This subdomain has been blocked",
+    reasonLabel: "Reason",
+    timeLabel: "Applied at",
+    waitTurnstile: "Please complete the human verification first",
+    labels: {
+      pending:  ["Pending", "text-yellow-600"],
+      approved: ["Approved", "text-green-600"],
+      rejected: ["Rejected", "text-red-600"],
+    },
   });
 </script>
 </body>
